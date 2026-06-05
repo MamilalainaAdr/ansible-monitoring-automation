@@ -1,0 +1,13 @@
+- name: Check if apache is installed
+  command: apache2 -v
+  register: apache_installation_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Install apache
+  apt:
+    name:
+      - apache2
+    state: present
+    update_cache: true
+  when: apache_installation_check.rc != 0

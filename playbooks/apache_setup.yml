@@ -1,0 +1,7 @@
+- name: Deploy apache exporter LOCALHOST
+  become: true
+  become_user: root
+  hosts: apache_webservers
+  roles:
+    - apache
+    - apache_exporter

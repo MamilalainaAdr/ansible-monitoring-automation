@@ -1,0 +1,7 @@
+- name: restart stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ node_docker_dir }}"
+    state: restarted
+
+- name: reload ufw
+  command: ufw reload

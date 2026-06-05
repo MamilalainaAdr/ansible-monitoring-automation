@@ -1,0 +1,12 @@
+{% for endpoint in blackbox_endpoints %}
+- targets:
+    - "{{ endpoint.url }}"
+  labels:
+    job: {{ label }}
+    module: http_2xx
+{% if endpoint.labels is defined %}
+{% for key, value in endpoint.labels.items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}
+{% endif %}
+{% endfor %}

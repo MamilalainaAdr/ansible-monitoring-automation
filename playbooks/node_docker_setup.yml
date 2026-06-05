@@ -1,0 +1,6 @@
+- name: Deploy node & docker exporter LOCALHOST
+  become: true
+  hosts: 
+    - docker_servers
+  roles:
+    - node_docker_exporter

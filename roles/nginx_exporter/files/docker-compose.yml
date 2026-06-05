@@ -1,0 +1,8 @@
+services:
+  nginx_exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx_exporter
+    network_mode: host  # Accès direct au réseau hôte
+    command:
+      - '--nginx.scrape-uri=http://localhost:2001/stub_status'
+    restart: unless-stopped

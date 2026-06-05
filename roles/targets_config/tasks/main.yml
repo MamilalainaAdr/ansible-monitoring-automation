@@ -1,0 +1,46 @@
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ monitoring_dir }}"
+    - "{{ targets_dir }}"
+
+- name: Generate target files
+  block:
+    - name: Generate node_exporter targets 
+      template:
+        src: node_targets.yml.j2
+        dest: "{{ targets_dir }}/node_targets.yml"
+      vars:
+        label: node_exporter
+
+    - name: Generate nginx_exporter targets 
+      template:
+        src: nginx_targets.yml.j2
+        dest: "{{ targets_dir }}/nginx_targets.yml"
+      vars:
+        label: nginx_exporter
+
+    - name: Generate apache_exporter targets 
+      template:
+        src: apache_targets.yml.j2
+        dest: "{{ targets_dir }}/apache_targets.yml"
+      vars:
+        label: apache_exporter
+
+    - name: Generate blackbox_exporter targets (for endpoint monitoring)
+      template:
+        src: blackbox_targets.yml.j2
+        dest: "{{ targets_dir }}/blackbox_targets.yml"
+      vars:
+        label: blackbox
+
+    - name: Generate cadvisor targets
+      template:
+        src: cadvisor_targets.yml.j2
+        dest: "{{ targets_dir }}/cadvisor_targets.yml"
+      vars:
+        label: cadvisor
+  notify: restart stack

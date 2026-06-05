@@ -1,0 +1,14 @@
+[central]
+central-server ansible_connection=local
+
+[docker_servers]
+docker-server ansible_connection=local
+
+[nginx_webservers]
+nginx-server ansible_connection=local
+
+[apache_webservers]
+apache-server ansible_connection=local
+
+[clusters]
+

@@ -1,0 +1,12 @@
+- name: restart stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ nginx_exporter_dir }}"
+    state: restarted
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: reload ufw
+  command: ufw reload

@@ -1,0 +1,11 @@
+{% for target in apache_targets %}
+- targets:
+    - "{{ target.url }}"
+  labels:
+    job: {{ label }}
+{% if target.labels is defined %}
+{% for key, value in target.labels.items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,54 @@
+- name: Check if stub_status.conf already exists
+  stat:
+    path: "{{ nginx_conf_dir }}/conf.d/stub_status.conf"
+  register: stub_status_file
+
+- name: Configure nginx stub_status and deploy nginx_exporter
+  block:
+    - name: Create configuration file
+      copy:
+        src: stub_status.conf
+        dest: "{{ nginx_conf_dir }}/conf.d/stub_status.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: reload nginx
+
+    - name: Test nginx config
+      command: nginx -t
+      changed_when: false
+      register: nginx_test
+
+    - name: Reload nginx
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx_test.rc == 0
+
+    - name: Allow Prometheus server to access nginx_exporter port
+      community.general.ufw:
+        rule: allow
+        port: '9113'
+        proto: tcp
+        from_ip: '{{ prometheus_server_ip }}'
+      notify: reload ufw
+      
+  when: not stub_status_file.stat.exists
+
+- name: Create directory for nginx exporter deployment
+  file:
+    path: "{{ nginx_exporter_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy deployment file
+  copy:
+    src: docker-compose.yml
+    dest: "{{ nginx_exporter_dir }}/docker-compose.yml"
+  notify: restart stack
+
+- name: Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ nginx_exporter_dir }}"
+    state: present
+  register: nginx_monitoring_up

@@ -1,0 +1,24 @@
+- name: Check if Docker is installed
+  command: docker --version
+  register: docker_installation_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Docker (if not present)
+  block:
+    - name: Copy Docker installation script
+      copy:
+        src: install-docker.sh
+        dest: /tmp/install-docker.sh
+        mode: '0755'
+
+    - name: Run Docker installation script
+      command: /tmp/install-docker.sh
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+  when: docker_installation_check.rc != 0

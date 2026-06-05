@@ -1,0 +1,72 @@
+- name: Configure apache status and deploy apache_exporter
+  block:
+    - name: Create configuration file
+      copy:
+        src: server-status.conf
+        dest: "{{ apache_conf_dir }}/sites-available/server-status.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: reload apache2
+
+    - name: Test apache config
+      command: apachectl configtest
+      register: apache_test
+    
+    - name: Apply config
+      command: a2ensite server-status.conf
+      when: apache_test.rc == 0
+      notify: reload apache2
+      
+- name: Check if UFW service is active
+  command: systemctl is-active ufw
+  register: ufw_is_active
+  changed_when: false
+  failed_when: false
+
+- name: Allow Prometheus server to access exporter ports
+  community.general.ufw:
+    rule: allow
+    port: '9117'
+    proto: tcp
+  notify: reload ufw
+  when: ufw_is_active.stdout == "active"
+
+- name: Check if iptables is available
+  command: iptables -L
+  register: iptables_check
+  changed_when: false
+  failed_when: false
+
+- name: Allow Prometheus server via iptables
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: '9117'
+    jump: ACCEPT
+  when: iptables_check.rc == 0
+
+- name: Create directory for apache exporter deployment
+  file:
+    path: "{{ apache_exporter_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy deployment file
+  copy:
+    src: docker-compose.yml
+    dest: "{{ apache_exporter_dir }}/docker-compose.yml"
+  register: compose_file
+
+- name: Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ apache_exporter_dir }}"
+    state: present
+    recreate: always
+  register: apache_monitoring_up
+
+- name: Restart stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ apache_exporter_dir }}"
+    state: restarted
+  when: compose_file.changed

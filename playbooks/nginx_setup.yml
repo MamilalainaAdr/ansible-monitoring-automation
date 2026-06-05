@@ -1,0 +1,6 @@
+- name: Deploy nginx exporter LOCALHOST
+  become: true
+  become_user: root
+  hosts: nginx_webservers
+  roles:
+    - nginx_exporter

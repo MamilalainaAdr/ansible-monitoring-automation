@@ -1,0 +1,30 @@
+- name: Copy prometheus.yml file
+  copy:
+    src: prometheus.yml
+    dest: "{{ monitoring_dir }}/prometheus.yml"
+  notify: restart prometheus
+
+- name: Copy blackbox.yml file
+  copy:
+    src: blackbox.yml
+    dest: "{{ monitoring_dir }}/blackbox.yml"
+  notify: restart blackbox
+
+- name: Copy grafana.ini file
+  copy:
+    src: grafana.ini
+    dest: "{{ monitoring_dir }}/grafana.ini"
+    mode: '0644'
+  notify: restart grafana
+
+- name: Copy deployment file
+  copy:
+    src: docker-compose.yml
+    dest: "{{ monitoring_dir }}/docker-compose.yml"
+  notify: restart stack
+
+- name: Start monitoring stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_dir }}"
+    state: present
+  register: monitoring_up

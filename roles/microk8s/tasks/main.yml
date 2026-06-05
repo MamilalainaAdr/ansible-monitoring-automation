@@ -1,0 +1,24 @@
+- name: Install microk8s
+  community.general.snap:
+    name: microk8s
+    classic: true
+    state: present
+  register: microk8s_install
+
+- name: Test microk8s installation
+  command: microk8s status --wait-ready
+  changed_when: false
+
+- name: Add current user to microk8s group
+  user:
+    name: "{{ ansible_user }}"
+    groups: microk8s
+    append: yes
+  when: microk8s_install.changed
+
+- name: Enable addons
+  command: microk8s enable {{ item }}
+  loop:
+    - ingress
+    - hostpath-storage
+    - dns

@@ -1,0 +1,75 @@
+#-----------------------------SSH Args-----------------------------#
+ansible_ssh_common_args: '-o IdentitiesOnly=yes'
+
+#-----------------------------Common dirs-----------------------------#
+# Central server
+monitoring_dir: /home/mamilalaina/security/monitoring
+targets_dir: /home/mamilalaina/security/monitoring/targets
+
+# Nginx exporter
+nginx_conf_dir: /etc/nginx
+nginx_exporter_dir: /home/mamilalaina/security/nginx-exporter
+
+# Node exporter & CAdvisor
+node_docker_dir: /home/mamilalaina/security/node-docker
+
+# Apache exporter
+apache_conf_dir: /etc/apache2
+apache_exporter_dir: /home/mamilalaina/security/apache-exporter
+
+# URL
+prometheus_server_ip: 192.168.0.108
+
+#-----------------------------Node exporter targets-----------------------------#
+node_targets:
+  - url: 'node_exporter:9100'
+    labels:
+      server: 'LOCAL'
+  - url: '192.168.0.108:2100'
+    labels:
+      server: 'node-test-LOCAL'
+  # - url: ''
+  #   labels:
+  #     server: ''
+
+#-----------------------------cAdvisor targets-----------------------------#
+cadvisor_targets:
+  - url: 'cadvisor:8080'
+    labels:
+      server: 'LOCAL'
+  - url: '192.168.0.108:2083'
+    labels:
+      server: 'cadvisor-test-LOCAL'
+  # - url: ''
+  #   labels:
+  #     server: ''
+
+#-----------------------------Nginx targets-----------------------------#
+nginx_targets:
+  - url: '192.168.0.108:9113'
+    labels:
+      server: 'LOCAL'
+  # - url: ''
+  #   labels:
+  #     server: ''
+
+#-----------------------------Apache targets-----------------------------#
+apache_targets:
+  - url: '192.168.0.108:9117'
+    labels:
+      server: 'LOCAL'
+  # - url: ''
+  #   labels:
+  #     server: ''
+
+#-----------------------------Blackbox endpoints-----------------------------#
+blackbox_endpoints:
+  - url: 'grafana:3000'
+    labels:
+      instance_name: 'Grafana LOCAL'
+  - url: 'prometheus:9090'
+    labels:
+      instance_name: 'Prometheus LOCAL'
+  # - url: ''
+  #   labels:
+  #     instance_name: ''

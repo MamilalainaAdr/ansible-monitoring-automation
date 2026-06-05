@@ -1,0 +1,8 @@
+services:
+  apache_exporter:
+    image: bitnami/apache-exporter:latest
+    container_name: apache_exporter
+    restart: unless-stopped
+    command:
+      - "--scrape_uri=http://127.0.0.1/server-status?auto"
+    network_mode: host

@@ -1,0 +1,25 @@
+- name: restart prometheus
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_dir }}"
+    state: restarted
+    services:
+      - prometheus
+
+- name: restart grafana
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_dir }}"
+    state: restarted
+    services:
+      - grafana
+  
+- name: restart blackbox
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_dir }}"
+    state: restarted
+    services:
+      - blackbox
+
+- name: restart stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_dir }}"
+    state: restarted

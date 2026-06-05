@@ -1,0 +1,5 @@
+- name: Setup LOCALHOST TEST monitoring and security services
+  hosts: central
+  roles:
+    - targets_config
+    - monitoring_central
