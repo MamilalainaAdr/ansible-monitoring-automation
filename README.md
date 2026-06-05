@@ -12,4 +12,4 @@
 
 #### Notes
 - used paths / variables are relative
-- 
+- please check / compare versions before use
